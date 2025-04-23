@@ -1,6 +1,22 @@
-import React from 'react'
+'use client'
+
+import React, { use, useState } from 'react'
+import SignUpModal from './SignUpModal'
+import LoginModal from './LoginModal';
 
 export default function Headers() {
+  const [showSignUp,setShowSignup]=useState(false);
+  const [showLogin,setShowLogin]=useState(false);
+
+
+  const handleModal=()=>{
+    console.log(showSignUp);
+    
+    setShowSignup(prev => !prev);
+  }
+  const handleLogin=()=>{
+    setShowLogin(prev => !prev);
+  }
   return (
     <div className='flex justify-between items-center w-full mx-auto px-20 py-8 sticky z-50 bg-zinc-100 '>
         <nav className='flex gap-4 items-center'>
@@ -39,15 +55,18 @@ export default function Headers() {
           <a 
             href="#" 
             className="text-blue-700 hover:underline px-2 py-1"
-          >
+           onClick={handleLogin} >
             Log In
           </a>
           <button 
             className="bg-blue-700 rounded-2xl px-4 py-2 text-white hover:bg-blue-800 transition-colors"
-          >
+          onClick={handleModal} >
             Join for Free
           </button>
+
         </div>
+        {showSignUp && <SignUpModal handleModal={handleModal} />}
+        {showLogin && <LoginModal handleLogin={handleLogin}/>}
     </div>
   )
 }

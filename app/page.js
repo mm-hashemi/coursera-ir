@@ -1,3 +1,4 @@
+'use client'
 import Companies from "@/components/companies";
 import Courses from "@/components/courses";
 import Sliders from "@/components/slides";
