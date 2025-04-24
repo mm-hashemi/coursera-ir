@@ -1,12 +1,20 @@
 'use client'
 
-import React, { use, useState } from 'react'
+import React, { createContext, use, useState } from 'react'
 import SignUpModal from './SignUpModal'
 import LoginModal from './LoginModal';
+
+
+
+export const AuthContext = createContext();
+export const UserIdContext = createContext();
+
 
 export default function Headers() {
   const [showSignUp,setShowSignup]=useState(false);
   const [showLogin,setShowLogin]=useState(false);
+  const [status,setStatus] = useState(false);
+  const [userId,setUserId] = useState('')
 
 
   const handleModal=()=>{
@@ -52,12 +60,25 @@ export default function Headers() {
         </nav>
         {/* right items */}
         <div className="flex items-center gap-3 md:gap-5">
-          <a 
+        {status ? (
+          <div className='flex justify-center items-center gap-3 cursor-pointer relative'>
+          <div className='w-14 h-14 bg-blue-500 rounded-full '></div>
+          <div><i class='bx bx-chevron-down'></i></div>
+          <div className='w-56 h-52 bg-amber-200 rounded-2xl absolute top-[65px] right-0'>
+            <ul>
+              <li></li>
+            </ul>
+          </div>
+           </div> 
+        )
+       
+          : ( <a 
             href="#" 
             className="text-blue-700 hover:underline px-2 py-1"
            onClick={handleLogin} >
             Log In
-          </a>
+          </a> 
+        )}
           <button 
             className="bg-blue-700 rounded-2xl px-4 py-2 text-white hover:bg-blue-800 transition-colors"
           onClick={handleModal} >
@@ -65,8 +86,15 @@ export default function Headers() {
           </button>
 
         </div>
+        <UserIdContext value={{userId,setUserId}}>
+     
+        <AuthContext.Provider value={{status,setStatus}}>
+
         {showSignUp && <SignUpModal handleModal={handleModal} />}
         {showLogin && <LoginModal handleLogin={handleLogin}/>}
+
+        </AuthContext.Provider>
+        </UserIdContext>
     </div>
   )
 }

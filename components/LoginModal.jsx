@@ -1,7 +1,13 @@
 'use client'
-import React, { useState } from 'react'
-
+import React, { useContext, useState } from 'react'
+import { AuthContext } from './header';
+import {  useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 export default function LoginModal({handleLogin}) {
+  
+    const router=useRouter()
+    const { setStatus } = useContext(AuthContext);
+    // const { setUserId } = useContext(UserIdContext);
 
     const [form, setForm] = useState({ email: '', password: '' });
     const [message, setMessage] = useState('');
@@ -10,6 +16,10 @@ export default function LoginModal({handleLogin}) {
       setForm({ ...form, [e.target.name]: e.target.value });
     };
   
+    const handleModal=()=>{
+      handleLogin();
+      setStatus(true);
+    };
     const handleSubmit = async (e) => {
       e.preventDefault();
   
@@ -21,8 +31,8 @@ export default function LoginModal({handleLogin}) {
           },
           body: JSON.stringify(form),
         });
-  
         const text = await res.text();
+        
         let data;
         try {
           data = JSON.parse(text);
@@ -34,10 +44,18 @@ export default function LoginModal({handleLogin}) {
           // ✅ Save tokens in localStorage
           localStorage.setItem('access', data.access);
           localStorage.setItem('refresh', data.refresh);
-  
+          const accessToken = data.access;
+          const decodedToken = jwtDecode(accessToken);
+          console.log(decodedToken);
+           // Decode the JWT
+          const userId = decodedToken.user_id; 
+          const userEmail = decodedToken.user.email;// Extract user ID
           setMessage('Login successful!');
           // Optionally close the modal
-          // handleModal();
+          handleModal();
+
+          router.push(`/${userId}?email=${userEmail}`); 
+
         } else {
           setMessage(data?.error || 'Login failed');
         }
