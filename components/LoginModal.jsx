@@ -1,17 +1,21 @@
 'use client'
 import React, { useContext, useState } from 'react'
-import { AuthContext } from './header';
+import {  UserIdContext } from './header';
 import {  useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-export default function LoginModal({handleLogin}) {
+import { AuthContext } from '@/app/CardShop/[courseId]/page';
+export default function LoginModal({handleLogin,setStatus}) {
   
     const router=useRouter()
-    const { setStatus } = useContext(AuthContext);
-    // const { setUserId } = useContext(UserIdContext);
+    // const { setStatus } = useContext(AuthContext);
+    const { setUserId } = useContext(UserIdContext);
+    // const { setStateBuy } = useContext(AuthContext);
 
     const [form, setForm] = useState({ email: '', password: '' });
     const [message, setMessage] = useState('');
-  
+
+   
+
     const handleChange = (e) => {
       setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -49,12 +53,18 @@ export default function LoginModal({handleLogin}) {
           console.log(decodedToken);
            // Decode the JWT
           const userId = decodedToken.user_id; 
-          const userEmail = decodedToken.user.email;// Extract user ID
+          const userEmail = decodedToken.email;// Extract user ID
           setMessage('Login successful!');
           // Optionally close the modal
           handleModal();
-
-          router.push(`/${userId}?email=${userEmail}`); 
+          setUserId(userId);
+          if (decodedToken.role === 'Admin') {
+            router.push('/admin/');
+          } else {
+           
+            router.push(`/${userId}`); 
+          }
+      
 
         } else {
           setMessage(data?.error || 'Login failed');
@@ -70,7 +80,7 @@ export default function LoginModal({handleLogin}) {
 
 
 
-  return (
+  return ( 
     <div>
 <div className='w-[100vw] h-full fixed right-0 left-0 top-0 bg-black/55'>
   <div className='w-[550px] mx-auto mt-60 bg-zinc-300 py-10 rounded-2xl shadow-2xl shadow-zinc-400 flex flex-col justify-center items-center relative'>
